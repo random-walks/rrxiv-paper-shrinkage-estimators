@@ -1,17 +1,19 @@
 cff-version: 1.2.0
 message: "If you reference this paper, please cite it as below."
 type: article
-title: "A starter rrxiv paper"
+title: "A negative result on shrinkage estimators in small-N replication"
 authors:
-  - family-names: "Your Name"
-    given-names: ""
-date-released: 2026-01-01
+  - family-names: "Albis-Burdige"
+    given-names: "Blaise"
+    orcid: "https://orcid.org/0009-0002-0561-6499"
+date-released: 2026-05-25
 license: CC-BY-4.0
-url: "https://github.com/<your-org>/<your-paper>"
+url: "https://github.com/random-walks/rrxiv-paper-shrinkage-estimators"
 preferred-citation:
   type: article
-  title: "A starter rrxiv paper"
+  title: "A negative result on shrinkage estimators in small-N replication"
   year: 2026
   authors:
-    - family-names: "Your Name"
-      given-names: ""
+    - family-names: "Albis-Burdige"
+      given-names: "Blaise"
+      orcid: "https://orcid.org/0009-0002-0561-6499"
