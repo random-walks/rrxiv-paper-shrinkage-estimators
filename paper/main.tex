@@ -1,13 +1,30 @@
 \documentclass{rrxiv}
 \rrxivid{rrxiv:2605.00004}
-\rrxivversion{v3}
+\rrxivversion{v4}
 \rrxivprotocolversion{0.1.0}
 \rrxivlicense{CC-BY-4.0}
 \rrxivtopics{stat.ME}
-\rrxivbuilddate{2026-05-25}
+\rrxivbuilddate{2026-07-14}
 
 \title{A negative result on shrinkage estimators in small-N replication}
-\author{Blaise Albis-Burdige \and Claude Opus 4.7}
+% Structured authorship (RRP-0021 + RRP-0026): mirrors rrxiv-meta.json
+% authors[]. Keep names byte-identical to the meta file so attribution
+% doesn't drift across the build + parse boundary.
+\rrxivauthor[orcid=0009-0002-0561-6499,
+             role=author,
+             affiliation={Random Walks},
+             email=albisburdige@protonmail.com]{Blaise Albis-Burdige}
+\rrxivauthor[role=agent,
+             is-agent=true,
+             handle=agent:claude-opus-4.7,
+             model-name={Claude Opus 4.7},
+             model-vendor=anthropic,
+             model-family=claude,
+             model-series=opus,
+             model-version=4.7,
+             model-release-pin=claude-opus-4-7-20260520,
+             model-release-date=2026-05-20,
+             inference-environment={Claude Code CLI}]{Claude Opus 4.7}
 \date{2026-05-13}
 
 \begin{document}
@@ -65,12 +82,19 @@ small-$N$ replication study with $K < 30$ groups, the prior is so
 poorly estimated that the recommended shrinker is dominated by simply
 reporting raw estimates with honest uncertainty intervals. This is
 the regime in which the methodological recommendation is, in effect,
-empty.
+empty. As of v4, this structure is explicit in the claim graph: the
+recommendation under test is registered as
+Hypothesis~\ref{claim:h1}, the negative result as
+Claim~\ref{claim:c8}, and the refutation as a
+\texttt{\textbackslash contradicts} edge from
+Claim~\ref{claim:c8} to Hypothesis~\ref{claim:h1}.
 
 \paragraph{Roadmap.} Section~\ref{sec:background} fixes notation and recalls
 classical JS. Section~\ref{sec:approach} states the two-stage estimator and
-the main risk bound. Section~\ref{sec:claims} registers the seven formal
-claims and the evidence supporting each. Section~\ref{sec:discussion} states
+the main risk bound. Section~\ref{sec:claims} registers the hypothesis
+under test, the seven formal claims carried over from v3, the
+negative-result claim that contradicts the hypothesis, and the evidence
+supporting each. Section~\ref{sec:discussion} states
 the operational implication for replication methodology and the open
 question of $L^1$ risk.
 
@@ -194,18 +218,28 @@ shrinkage improvement exceeds the auxiliary-estimation cost (Section~\ref{sec:di
 % c5 (continuous degradation) is a corollary of the bound in c1.
 % c7 (L^p extension) reuses the same Stein-identity machinery as c1.
 % c6 (compute cost) is independent of the others (it's an engineering claim).
+% c8 (the negative result) combines the bound from c1 with the compute
+%    asymmetry from c6; it CONTRADICTS the tested hypothesis h1 --- the
+%    standing methodological recommendation this paper set out to evaluate.
 \dependson{rrxiv:2605.00004:claim:c2}{rrxiv:2605.00004:claim:c1}
 \dependson{rrxiv:2605.00004:claim:c3}{rrxiv:2605.00004:claim:c1}
 \dependson{rrxiv:2605.00004:claim:c4}{rrxiv:2605.00004:claim:c2}
 \dependson{rrxiv:2605.00004:claim:c5}{rrxiv:2605.00004:claim:c1}
 \dependson{rrxiv:2605.00004:claim:c7}{rrxiv:2605.00004:claim:c1}
+\dependson{rrxiv:2605.00004:claim:c8}{rrxiv:2605.00004:claim:c1}
+\dependson{rrxiv:2605.00004:claim:c8}{rrxiv:2605.00004:claim:c6}
+\contradicts{rrxiv:2605.00004:claim:c8}{rrxiv:2605.00004:claim:h1}
 
 % --- Cross-paper edges ---
-% The compute-budget claim hangs off the reproducibility-budget paper's accounting conventions.
+% The compute-budget claim (c6) hangs off the reproducibility-budget
+% paper's accounting conventions, and the multi-task benchmark (c4)
+% registers its code, data, and compute envelope under the same
+% conventions (see the claim text).
 \dependson{rrxiv:2605.00004:claim:c6}{rrxiv:2605.00003:claim:c1}
+\dependson{rrxiv:2605.00004:claim:c4}{rrxiv:2605.00003:claim:c1}
 
 \subsection*{Claim 1: dominance over classical JS}
-\begin{claim}[Claim 1]
+\begin{claim}[title=Claim 1, type=theoretical, evidence=proof, confidence=0.95, rationale={closed-form proof; independently replicated by two groups via the SURE identity and via direct moment computation}, assumptions={target estimate independent of X, known variance, dimension at least 3}]
 \label{claim:c1}
 The two-stage shrinker dominates standard JS whenever the prior mean has lower MSE than the origin.
 
@@ -227,7 +261,7 @@ when it is relaxed (e.g.\ if $\hat\mu$ is fit on the same $X$), the
 dominance disappears in pre-asymptotic regimes.
 
 \subsection*{Claim 2: tightness of the closed-form bound}
-\begin{claim}[Claim 2]
+\begin{claim}[title=Claim 2, type=empirical, evidence=simulation, confidence=0.8, rationale={three benchmark problems with known truth, 10000 Monte Carlo draws per configuration; largest observed gap 5.7 percent, average 3.1 percent; no independent replication yet}, regimes={hierarchical means d=50 K=20, sparse recovery d=200 s=10, multi-task regression benchmark}]
 \label{claim:c2}
 The closed-form risk bound is tight to within 6\% across all three benchmark problems we tested.
 
@@ -247,7 +281,7 @@ expression in $M$ and $\sigma^2$ alone --- but is sharp enough to be
 practically usable as an a-priori sizing tool.
 
 \subsection*{Claim 3: empirical-Bayes extension}
-\begin{claim}[Claim 3]
+\begin{claim}[title=Claim 3, type=theoretical, evidence=proof, confidence=0.9, rationale={plug-in argument under standard regularity; independently verified by reproducing the Efron-Morris empirical-Bayes computations with the two-stage shrinker substituted}, assumptions={twice-differentiable marginal log-likelihood, integrable score, auxiliary data independent of X}]
 \label{claim:c3}
 The dominance result extends to empirical-Bayes priors via a plug-in argument (Theorem 3.2).
 
@@ -268,7 +302,7 @@ empirical-Bayes computations with our two-stage shrinker substituted; the
 posterior risk matches within Monte Carlo precision.
 
 \subsection*{Claim 4: multi-task regression benchmark}
-\begin{claim}[Claim 4]
+\begin{claim}[title=Claim 4, type=empirical, evidence=simulation, confidence=0.75, rationale={single synthetic benchmark suite of 50 tasks, 1000 bootstrap resamples over tasks; no independent replication yet}, datasets={synthetic multi-task linear regression suite}, regimes={50 tasks with shared coefficient structure, n=100 training points per task, held-out-half prior fit}]
 \label{claim:c4}
 On the multi-task regression benchmark, the two-stage shrinker reduces test MSE by 11.3\% over single-stage JS (95\% CI [9.1, 13.6]).
 
@@ -285,7 +319,7 @@ resamples over tasks. Code and data registration follow the
 $1.2 \times 10^{14}$ FLOPs, $\$0.40$ at on-demand cloud spot rates).
 
 \subsection*{Claim 5: continuous degradation}
-\begin{claim}[Claim 5]
+\begin{claim}[title=Claim 5, type=theoretical, evidence=proof, confidence=0.95, rationale={direct corollary of the Claim 1 bound: both bounds are continuous and monotone in their squared-distance arguments}, assumptions={the bound regime of Claim 1; realised risk outside the independence assumption is not covered}]
 \label{claim:c5}
 The risk bound degrades to the standard JS bound continuously as the prior strength shrinks to zero, confirming the estimator is never strictly worse.
 
@@ -307,7 +341,7 @@ two-stage shrinker can underperform one-stage JS. The bound predicts
 \end{observation}
 
 \subsection*{Claim 6: compute cost is in the prior step}
-\begin{claim}[Claim 6]
+\begin{claim}[title=Claim 6, type=computational, evidence=experiment, confidence=0.9, rationale={wall-clock measurements on the three benchmarks (shrinkage step at 0.2, 0.6, and 0.9 percent of total runtime) plus an operation-count argument, O(d) versus O(K d squared) or worse for the prior step}, regimes={the three benchmark problems of Claim 2}, labels={negative-result}]
 \label{claim:c6}
 Computational cost is dominated by the prior estimation step; the shrinkage step itself adds \textless{}1\% to total runtime.
 
@@ -332,7 +366,7 @@ anything, the operational recommendation flips for small $K$.
 \end{rrxivremark}
 
 \subsection*{Claim 7: extension to $L^p$ risk}
-\begin{claim}[Claim 7]
+\begin{claim}[title=Claim 7, type=theoretical, evidence=argument, confidence=0.8, rationale={argued via convexity of the p-norm for p greater than 1; the full derivation is not written out in this paper and the p=1 case is explicitly open}, assumptions={p strictly greater than 1}]
 \label{claim:c7}
 The same proof technique extends to L\textasciicircum{}p risk for p \textgreater{} 1 with minor modifications (open question for p = 1).
 
@@ -358,6 +392,53 @@ results for one-stage JS under $L^1$ exist but rely on heavy-tailed
 concentration tools that do not obviously commute with the prior
 integration step.
 \end{openquestion}
+
+\subsection*{Hypothesis H1 and Claim 8: the negative result, registered}
+
+The negative half of this paper's result has, until this revision, lived
+only in prose (the introduction and Section~\ref{sec:discussion}). We now
+register it in the claim graph. First, the belief being tested --- the
+standing recommendation of the small-$N$ replication literature --- as an
+explicit hypothesis:
+
+\begin{claim}[title=H1 (the tested hypothesis), type=empirical, evidence=argument, confidence=0.1, rationale={the standing recommendation of the methodological literature since the Efron-Morris era; its theoretical support (JS dominance) is real but this paper's Claim 8 contradicts its operational content in the small-K data-estimated-prior regime}, regimes={small-N replication, K < 30, target estimated from the same K groups}, labels={hypothesis-under-test}]
+\label{claim:h1}
+James-Stein-style shrinkage --- shrinking small-$N$ replication estimates
+toward zero or toward an estimated target --- materially reduces the MSE
+of reported effect estimates in typical small-$N$ replication studies,
+including when the number of cross-replication groups is small ($K < 30$)
+and the target must be estimated from the same groups.
+
+\emph{Replication status: n/a (hypothesis under test).}
+\end{claim}
+
+The hypothesis is stated as the literature applies it: as an operational
+recommendation for practitioners, not as the (true) domination theorem
+that motivates it. The confidence recorded on H1 is our posterior after
+this study, with the rationale explaining why. The result that
+contradicts it:
+
+\begin{claim}[title=Claim 8 (the negative result), type=empirical, evidence=simulation, confidence=0.8, rationale={three simulation benchmarks and one multi-task regression study, one simulation design per benchmark; the K threshold of roughly 30 is an empirical cut observed in these designs, not a proven constant; no independent replication yet}, regimes={small-N replication, K < 30, target estimated from the same K groups}, labels={negative-result}]
+\label{claim:c8}
+For small-$N$ replication studies with $K < 30$ groups whose shrinkage
+target must be estimated from the same $K$ groups, the prior MSE $M$ is
+large enough that the dominance margin of Remark~\ref{rem:thm-31} falls
+below the cross-replication variance of the estimator, while the prior
+estimation step dominates the compute budget
+(Claim~\ref{claim:c6}); reporting raw estimates with honest uncertainty
+intervals is operationally preferable to the recommended shrinker.
+
+\emph{Replication status: untested.}
+\end{claim}
+
+Claim~\ref{claim:c8} carries a \texttt{\textbackslash contradicts} edge
+to Hypothesis~\ref{claim:h1} --- to our knowledge the first
+\texttt{contradicts} edge in the rrxiv reference corpus --- and
+\texttt{\textbackslash dependson} edges to Claim~\ref{claim:c1} (the
+bound that quantifies the dominance margin) and Claim~\ref{claim:c6}
+(the compute asymmetry). The contradiction is scoped, not global: for
+$K \gtrsim 30$, or when a closed-form prior is available at no data
+cost, the recommendation stands (Section~\ref{sec:discussion}).
 
 \section{Discussion}
 \label{sec:discussion}
@@ -403,8 +484,11 @@ declared via \texttt{\textbackslash dependson} edges is consumed by the
 rrxiv parser into a structured proof graph, in the same pattern the Euclid
 demonstration paper~\texttt{rrxiv:2605.00009} uses for its theorem-proof
 encoding. The reproducibility-budget accounting in Claim~\ref{claim:c6}
+--- and the benchmark registration in Claim~\ref{claim:c4} ---
 follows the conventions of~\texttt{rrxiv:2605.00003}, including the
-explicit FLOPs envelope and on-demand cost estimate. The motivation for
+explicit FLOPs envelope and on-demand cost estimate; both carry
+\texttt{\textbackslash dependson} edges to that paper's headline claim.
+The motivation for
 separately citable claims --- so a future paper can replicate
 Claim~\ref{claim:c3} (the empirical-Bayes extension) without re-litigating
 Claim~\ref{claim:c1} (the original dominance) --- is articulated in the
